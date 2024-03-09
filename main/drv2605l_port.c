@@ -49,9 +49,12 @@ uint8_t drv2605l_port_Init(void)
     return DRV2605L_PORT_STATUS_OK;
 }
 
-uint8_t drv2605l_port_WriteRegister(uint8_t addr, uint8_t val)
+uint8_t drv2605l_port_WriteRegister(uint8_t addr, uint8_t const *const pVal)
 {
-    uint8_t writeBuff[] = {(DRV2605L_PORT_I2C_ADDRESS << 1) | I2C_MASTER_WRITE, addr, val};
+    if (pVal == NULL)
+        return DRV2605L_PORT_STATUS_ERROR;
+
+    uint8_t writeBuff[] = {(DRV2605L_PORT_I2C_ADDRESS << 1) | I2C_MASTER_WRITE, addr, (*pVal)};
     i2c_cmd_handle_t cmd = i2c_cmd_link_create_static(gInst.cmdLinkBuff, sizeof(gInst.cmdLinkBuff));
     if (i2c_master_start(cmd) != ESP_OK)
         return DRV2605L_PORT_STATUS_ERROR;
@@ -66,6 +69,9 @@ uint8_t drv2605l_port_WriteRegister(uint8_t addr, uint8_t val)
 
 uint8_t drv2605l_port_ReadRegister(uint8_t addr, uint8_t *const buff)
 {
+    if (buff == NULL)
+        return DRV2605L_PORT_STATUS_ERROR;
+
     uint8_t writeBuff1[] = {(DRV2605L_PORT_I2C_ADDRESS << 1) | I2C_MASTER_WRITE, addr};
     uint8_t writeBuff2[] = {(DRV2605L_PORT_I2C_ADDRESS << 1) | I2C_MASTER_READ};
     i2c_cmd_handle_t cmd = i2c_cmd_link_create_static(gInst.cmdLinkBuff, sizeof(gInst.cmdLinkBuff));

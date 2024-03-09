@@ -21,7 +21,7 @@ typedef enum
 
 uint8_t drv2605l_port_Init(void);
 
-uint8_t drv2605l_port_WriteRegister(uint8_t addr, uint8_t val);
+uint8_t drv2605l_port_WriteRegister(uint8_t addr, uint8_t const *const pVal);
 
 uint8_t drv2605l_port_ReadRegister(uint8_t addr, uint8_t *const buff);
 

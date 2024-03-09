@@ -7,6 +7,7 @@
 #include <driver/gpio.h>
 #include <driver/i2c.h>
 #include <drv2605l_port.h>
+#include <drv2605l_reg.h>
 
 // #define MASTER_PORT (0)
 // #define SCL_GPIO (GPIO_NUM_22)
@@ -94,8 +95,12 @@ void app_main(void)
         // {
         //     ESP_LOGI(TAG, "read success val: 0X%02X", val);
         // }
+        drv2605l_reg_bitwise_t reg = {0};
+        reg.bit7 = 1;
+        reg.bit4 = 1;
+        reg.bit0 = 1;
 
-        if (drv2605l_port_WriteRegister(0x02, 0xab) != DRV2605L_PORT_STATUS_OK)
+        if (drv2605l_port_WriteRegister(0x02, (uint8_t *)&reg) != DRV2605L_PORT_STATUS_OK)
         {
             ESP_LOGE(TAG, "failed to write");
         }
@@ -103,14 +108,23 @@ void app_main(void)
         {
             ESP_LOGI(TAG, "write success");
         }
-        uint8_t val = 0;
-        if (drv2605l_port_ReadRegister(0x02, &val) != DRV2605L_PORT_STATUS_OK)
+        (void)memset(&reg, 0, sizeof(reg));
+        if (drv2605l_port_ReadRegister(0x02, (uint8_t *)&reg) != DRV2605L_PORT_STATUS_OK)
         {
             ESP_LOGE(TAG, "failed to read");
         }
         else
         {
-            ESP_LOGI(TAG, "read success val: 0X%02X", val);
+            // ESP_LOGI(TAG, "read success val: 0X%02X", val);
+            ESP_LOGI(TAG, "read success val:[%d : %d :%d :%d :%d :%d :%d :%d ]",
+                     reg.bit7,
+                     reg.bit6,
+                     reg.bit5,
+                     reg.bit4,
+                     reg.bit3,
+                     reg.bit2,
+                     reg.bit1,
+                     reg.bit0);
         }
 
         vTaskDelay(pdMS_TO_TICKS(1000));
